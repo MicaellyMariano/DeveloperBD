@@ -1,0 +1,107 @@
+squad:
+  code: support-analytics-squad
+  name: Support Analytics Squad
+  description: "Gerente analitico de suporte para software houses — recebe dados brutos (exports de tickets, planilhas, CSVs, JSONs) e extrai inteligencia gerencial: quais metricas cruzar, onde estao os gargalos, como otimizar a equipe, previsoes de volume, analise de performance individual e coletiva. Entrega dashboard HTML interativo com Chart.js, KPIs acionaveis e recomendacoes estrategicas."
+  icon: bar-chart-2
+  version: "1.0.0"
+  category: support
+  tags:
+    - support
+    - analytics
+    - data-analysis
+    - kpi
+    - dashboard
+    - management
+    - metrics
+    - performance
+    - software-house
+    - team-management
+    - interactive
+    - html
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "Gestores de suporte de software houses, coordenadores de helpdesk analisando performance da equipe, CTOs avaliando eficiencia operacional do suporte, e lideres de CS tomando decisoes baseadas em dados"
+  platform: "Report"
+  format: "support-analytics"
+
+  skills:
+    - web_search
+    - web_fetch
+    - frontend-design
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: analytics-chief
+      name: Analytics Chief
+      icon: crown
+      prompt: agents/analytics-chief.agent.md
+    - id: data-explorer
+      name: Data Explorer
+      icon: database
+      prompt: agents/data-explorer.agent.md
+    - id: metrics-architect
+      name: Metrics Architect
+      icon: target
+      prompt: agents/metrics-architect.agent.md
+    - id: insights-analyst
+      name: Insights Analyst
+      icon: trending-up
+      prompt: agents/insights-analyst.agent.md
+    - id: dashboard-engineer
+      name: Dashboard Engineer
+      icon: code
+      prompt: agents/dashboard-engineer.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: analytics-chief
+        label: Receber dados e briefing, diagnosticar fonte de dados, definir objetivos analiticos
+        execution: inline
+      - id: step-02
+        agent: data-explorer
+        label: Explorar e perfilar a fonte de dados — campos disponiveis, qualidade, volume, periodos
+        deliverFrom: analytics-chief
+        execution: inline
+      - id: step-03
+        agent: analytics-chief
+        label: Sintetizar perfil dos dados e definir estrategia analitica
+        deliverFrom: analytics-chief
+        execution: inline
+      - id: step-04
+        agent: metrics-architect
+        label: Projetar framework de metricas — quais KPIs extrair, quais cruzamentos geram insight
+        deliverFrom: analytics-chief
+        execution: inline
+      - id: step-05
+        agent: insights-analyst
+        label: Analisar dados em profundidade — padroes, correlacoes, anomalias, tendencias, previsoes
+        deliverFrom: analytics-chief
+        execution: inline
+      - id: step-06
+        agent: analytics-chief
+        label: Sintetizar Support Analytics Report com insights e recomendacoes gerenciais
+        deliverFrom: analytics-chief
+        execution: inline
+        output: support-analytics-report.md
+      - id: step-07
+        agent: analytics-chief
+        label: Quality checkpoint — validar completude, consistencia dos dados e acionabilidade dos insights
+        deliverFrom: analytics-chief
+        execution: inline
+        checkpoint: true
+        on_reject: step-06
+      - id: step-08
+        agent: dashboard-engineer
+        label: Gerar dashboard HTML interativo com Chart.js, KPIs e recomendacoes
+        deliverFrom: analytics-chief
+        execution: inline
+        skill: frontend-design
+        output: support-analytics-dashboard.html

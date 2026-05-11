@@ -1,0 +1,92 @@
+squad:
+  code: data-ai-squad
+  name: Data & AI Squad
+  description: Data engineering, machine learning, AI architecture, NLP, MLOps, and data-driven decision making
+  icon: database
+  version: "1.0.0"
+  category: development
+  tags:
+    - data-engineering
+    - machine-learning
+    - ai
+    - mlops
+    - nlp
+    - analytics
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "CTOs, data leaders, ML engineers, and teams building data-driven products"
+  platform: "Report"
+  format: "data-ai-strategy"
+
+  skills:
+    - web_search
+    - web_fetch
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: data-ai-chief
+      name: Data & AI Chief
+      icon: database
+      prompt: agents/data-ai-chief.agent.md
+    - id: data-engineer
+      name: Data Engineer
+      icon: hard-drive
+      prompt: agents/data-engineer.agent.md
+    - id: ml-architect
+      name: ML Architect
+      icon: cpu
+      prompt: agents/ml-architect.agent.md
+    - id: data-scientist
+      name: Data Scientist
+      icon: bar-chart
+      prompt: agents/data-scientist.agent.md
+    - id: nlp-engineer
+      name: NLP Engineer
+      icon: message-circle
+      prompt: agents/nlp-engineer.agent.md
+    - id: llm-architect
+      name: LLM Architect
+      icon: zap
+      prompt: agents/llm-architect.agent.md
+    - id: mlops-engineer
+      name: MLOps Engineer
+      icon: settings
+      prompt: agents/mlops-engineer.agent.md
+    - id: data-analyst
+      name: Data Analyst
+      icon: trending-up
+      prompt: agents/data-analyst.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: data-ai-chief
+        label: Diagnose data/AI challenge and identify relevant specialists
+        execution: inline
+      - id: step-02
+        agent: data-ai-chief
+        label: Route to specialists for domain-specific analysis
+        deliverFrom: data-ai-chief
+        execution: inline
+      - id: step-03
+        agent: data-ai-chief
+        label: Synthesize data/AI strategy and validate architecture
+        deliverFrom: data-ai-chief
+        execution: inline
+      - id: step-04
+        agent: data-ai-chief
+        label: Design implementation plan and technology stack
+        deliverFrom: data-ai-chief
+        execution: inline
+      - id: step-05
+        agent: data-ai-chief
+        label: Final Data & AI Strategy Report and implementation roadmap
+        deliverFrom: data-ai-chief
+        execution: inline
