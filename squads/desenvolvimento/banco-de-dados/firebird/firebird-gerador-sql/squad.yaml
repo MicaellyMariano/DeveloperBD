@@ -1,0 +1,144 @@
+squad:
+  code: firebird-gerador-sql
+  setor: desenvolvimento
+  grupo: banco-de-dados
+  sessao: firebird
+  name: GeradorSQL Firebird 2.5
+  description: Squad especialista em Firebird 2.5 que analisa a estrutura do banco e gera SQL válido a partir de linguagem natural — SELECTs, JOINs, relatórios fiscais, UPDATEs seguros e análise de inconsistências. Inclui geração de código Delphi/FireDAC pronto para uso.
+  icon: database
+  version: "1.0.0"
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: Desenvolvedores Delphi e analistas que trabalham com ERP/fiscal em Firebird 2.5 via IBExpert
+  platform: Firebird 2.5 / IBExpert / Delphi FireDAC
+  format: sql-generation
+
+  schedule:
+    enabled: false
+
+  skills:
+    - file_management
+
+  # Squads de referência utilizados como base para agentes especializados
+  squad_references:
+    - id: delphi-squad
+      path: "squads/@community/delphi-squad"
+      used_by: [delphi-agent]
+    - id: data-ai-squad
+      path: "squads/@thulio/data-ai-squad"
+      used_by: [analytics-agent]
+    - id: qa-squad
+      path: "squads/@thulio/qa-squad"
+      used_by: [review-agent]
+
+  data: []
+
+  agents:
+    - id: docs-agent
+      name: "Pedro Alves"
+      icon: book
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Pedro"
+      prompt: agents/docs-agent.md
+
+    - id: dba-agent
+      name: "Marcos Andrade"
+      icon: gear
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Marcos"
+      prompt: agents/dba-agent.md
+
+    - id: business-agent
+      name: "Bruno Ferreira"
+      icon: briefcase
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Bruno"
+      prompt: agents/business-agent.md
+
+    - id: sql-agent
+      name: "Fernanda Costa"
+      icon: code
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Fernanda"
+      prompt: agents/sql-agent.md
+
+    - id: safety-agent
+      name: "Claudia Santos"
+      icon: shield
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Claudia"
+      prompt: agents/safety-agent.md
+
+    - id: delphi-agent
+      name: "Gustavo Ribeiro"
+      icon: code-bracket
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Gustavo"
+      prompt: agents/delphi-agent.md
+      # Baseado em: squads/@community/delphi-squad → database-specialist
+
+    - id: analytics-agent
+      name: "Renata Oliveira"
+      icon: trending-up
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Renata"
+      prompt: agents/analytics-agent.md
+      # Baseado em: squads/@thulio/data-ai-squad → data-analyst
+      # Ativado apenas para queries analíticas (GROUP BY, agregações, relatórios)
+
+    - id: review-agent
+      name: "Thiago Mendes"
+      icon: git-pull-request
+      avatar: "https://api.dicebear.com/9.x/adventurer/svg?seed=Thiago"
+      prompt: agents/review-agent.md
+      # Baseado em: squads/@thulio/qa-squad → code-reviewer
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: docs-agent
+        label: "Pedro: Mapear estrutura do banco (tabelas, campos, PKs, FKs, índices)"
+        execution: inline
+
+      - id: step-02
+        agent: dba-agent
+        label: "Marcos: Identificar relacionamentos, validar compatibilidade Firebird 2.5"
+        deliverFrom: docs-agent
+        execution: inline
+
+      - id: step-03
+        agent: business-agent
+        label: "Bruno: Interpretar solicitação em linguagem natural → requisitos técnicos"
+        deliverFrom: dba-agent
+        execution: inline
+
+      - id: step-04
+        agent: sql-agent
+        label: "Fernanda: Gerar SQL formatado e compatível com Firebird 2.5"
+        deliverFrom: business-agent
+        execution: inline
+        produces_format: true
+
+      - id: step-05
+        agent: safety-agent
+        label: "Claudia: Validar riscos e aprovar/bloquear a operação"
+        deliverFrom: sql-agent
+        execution: inline
+
+      - id: step-06
+        agent: analytics-agent
+        label: "Renata: Enriquecer com KPIs e insights (somente queries analíticas)"
+        deliverFrom: safety-agent
+        execution: inline
+        condition: "query_has_aggregation"
+        # Pula automaticamente para SELECTs simples sem GROUP BY/agregação
+
+      - id: step-07
+        agent: delphi-agent
+        label: "Gustavo: Gerar código Delphi/FireDAC pronto para uso"
+        deliverFrom: analytics-agent
+        execution: inline
+        # Baseado no @community/delphi-squad database-specialist
+
+      - id: step-08
+        agent: review-agent
+        label: "Thiago: Revisão final de qualidade — SQL + Delphi + Segurança"
+        deliverFrom: delphi-agent
+        execution: inline
+        # Baseado no @thulio/qa-squad code-reviewer
