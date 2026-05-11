@@ -494,7 +494,18 @@ Quantidade a comprar = saldo mínimo menos saldo atual (quando negativo = produt
 - ⚠️ NUNCA usar LIKE com parâmetro sem CAST → erro "string right truncation"
 - ✅ Sempre usar `CAST(:PARAM AS VARCHAR(N))` em filtros com LIKE/CONTAINING
 
-**SQL final validado:**
+**Campos de valor do CT-e na NOTA:**
+- `FRETE_VALOR` — ✅ valor do frete (campo correto para CT-e). `NF_FRETE` é NULL em CT-e!
+- `VALOR_CARGA` — valor total da carga transportada
+- `NF_VALNOTA` — valor total da nota CT-e
+- `VAL_PEDAGIO` — valor de pedágio (geralmente NULL)
+- `VAL_SEGURO_CARGA` — valor do seguro da carga
+- `OUTROS_VALORES` — outros valores cobrados
+- `UF_TERMINO_PREST` — UF de destino do CT-e
+
+⚠️ `NF_FRETE` é NULL em CT-e — usar sempre `FRETE_VALOR` para valor do frete em CT-e
+
+**SQL-012a — Detalhe por CT-e (com data e número para identificar no sistema):**
 ```sql
 SELECT
     n.nf_emissao                                          AS data_emissao,
@@ -512,10 +523,38 @@ WHERE n.nf_numero IS NOT NULL
   AND n.nf_emissao <= :DATA_FIM
   AND n.codemp IN (:CODEMP)
   AND n.motivo = 'Autorizado o uso do CT-e'
-  AND (CAST(:CIDADE AS VARCHAR(100)) = '' OR n.municipio_termino_prest CONTAINING CAST(:CIDADE AS VARCHAR(100)))
+  AND (COALESCE(CAST(:CIDADE AS VARCHAR(100)), '') = '' OR n.municipio_termino_prest CONTAINING CAST(:CIDADE AS VARCHAR(100)))
   AND (:CODCLI = 0 OR n.cod_remetente = :CODCLI)
 ORDER BY n.nfe
 ```
+
+**SQL-012b — Resumo agrupado por remetente (cliente obrigatório):**
+```sql
+SELECT
+    COALESCE(rem.nomraz, 'NAO IDENTIFICADO')             AS remetente,
+    COALESCE(n.municipio_termino_prest, 'NAO INFORMADO') AS cidade_entrega,
+    COALESCE(dest.nomraz, 'NAO IDENTIFICADO')            AS destinatario,
+    COUNT(n.nf_numero)                                    AS qtd_entregas,
+    SUM(n.nf_valnota)                                     AS valor_total,
+    SUM(n.frete_valor)                                    AS valor_frete
+FROM nota n
+LEFT JOIN cadastro rem  ON rem.codigo  = n.cod_remetente
+LEFT JOIN cadastro dest ON dest.codigo = n.nf_codcli
+WHERE n.nf_numero IS NOT NULL
+  AND n.nf_modelo = 'CTe'
+  AND n.nf_emissao >= :DATA_INI
+  AND n.nf_emissao <= :DATA_FIM
+  AND n.codemp IN (:CODEMP)
+  AND n.motivo = 'Autorizado o uso do CT-e'
+  AND n.cod_remetente = :CODCLI
+GROUP BY n.cod_remetente, rem.nomraz, n.municipio_termino_prest, n.nf_codcli, dest.nomraz
+ORDER BY n.municipio_termino_prest, qtd_entregas DESC
+```
+
+**Padrão COALESCE para parâmetro opcional string no IBExpert:**
+- IBExpert envia NULL quando o campo é deixado em branco (não string vazia!)
+- ✅ Correto: `COALESCE(CAST(:PARAM AS VARCHAR(100)), '') = ''`
+- ❌ Errado: `CAST(:PARAM AS VARCHAR(100)) = ''` — falha quando NULL
 
 **Cidades disponíveis nesta base (CT-e codemp=1):**
 AMERICANA, AMPARO, ARTUR NOGUEIRA, BARUERI, BRAGANCA PAULISTA, CAMPINAS, CONCHAL, COTIA, DIADEMA, EXTREMA, FORTALEZA, FRANCO DA ROCHA, GUARULHOS, HOLAMBRA, HORTOLANDIA, INDAIATUBA, ITAPECERICA DA SERRA, ITUMBIARA, ITUPEVA, JAGUARIUNA, JUNDIAI, LEME, LIMEIRA, MACEIO, MAUA, MOGI GUACU, MOGI MIRIM, MORUNGABA, NOVA ODESSA, NOVO HAMBURGO, OSASCO, PEDREIRA, RAFARD, SALTO, SANTA BARBARA D'OESTE, SANTANA DE PARNAIBA, SANTO ANDRE, SANTO ANTONIO DE POSSE, SAO BERNARDO DO CAMPO, SAO CAETANO DO SUL, SAO PAULO, SERRA NEGRA, SOROCABA, SUMARE, VALINHOS, VARGEM GRANDE PAULISTA
@@ -579,3 +618,4 @@ ORDER BY ORDEM, HORA_ORDER
 ## Histórico de Execuções
 - 2026-05-11 | Mapeamento completo de 559 tabelas + contagem de registros | CEM.FDB
 - 2026-05-11 | SQL-011 registrado: vendas por horário, DATACRIADO/HORACRIADO, formatação de datas Firebird 2.5
+- 2026-05-11 | SQL-012 registrado: CT-e transportadora — remetente/destinatário, FRETE_VALOR, CONTAINING, COALESCE para NULL em IBExpert
