@@ -4,7 +4,9 @@
       "WebSearch",
       "WebFetch(domain:expxagents.dev)",
       "WebFetch(domain:github.com)",
-      "Bash(npx expxagents *)"
+      "Bash(npx expxagents *)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\ram\\\\Documents\\\\GeradorSQL\\\\GeradorSQL\\\\squads\\\\desenvolvimento\\\\banco-de-dados\\\\firebird\\\\firebird-gerador-sql\\\\agents\")",
+      "Bash(mkdir -p \"c:\\\\Users\\\\ram\\\\Documents\\\\GeradorSQL\\\\GeradorSQL\\\\squads\\\\desenvolvimento\\\\banco-de-dados\\\\firebird\\\\firebird-gerador-sql\\\\_memory\")"
     ]
   }
 }
