@@ -1,0 +1,88 @@
+squad:
+  code: delphi-squad
+  name: Delphi Squad
+  description: Delphi and Object Pascal development — VCL desktop, FireMonkey cross-platform, databases, and RAD Studio tooling
+  icon: monitor
+  version: "1.0.0"
+  category: development
+  tags:
+    - delphi
+    - object-pascal
+    - vcl
+    - firemonkey
+    - firedac
+    - rad-studio
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "Delphi and Object Pascal developers"
+  platform: "Report"
+  format: "delphi-development"
+
+  skills:
+    - web_search
+    - web_fetch
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: delphi-chief
+      name: Delphi Chief
+      icon: monitor
+      prompt: agents/delphi-chief.agent.md
+    - id: code-quality-advisor
+      name: Code Quality Advisor
+      icon: check-circle
+      prompt: agents/code-quality-advisor.agent.md
+    - id: devops-engineer
+      name: DevOps Engineer
+      icon: server
+      prompt: agents/devops-engineer.agent.md
+    - id: vcl-specialist
+      name: VCL Specialist
+      icon: layout
+      prompt: agents/vcl-specialist.agent.md
+    - id: firemonkey-specialist
+      name: FireMonkey Specialist
+      icon: smartphone
+      prompt: agents/firemonkey-specialist.agent.md
+    - id: database-specialist
+      name: Database Specialist
+      icon: database
+      prompt: agents/database-specialist.agent.md
+    - id: test-engineer
+      name: Test Engineer
+      icon: shield
+      prompt: agents/test-engineer.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: delphi-chief
+        label: Diagnose Delphi challenge and identify relevant specialists
+        execution: inline
+      - id: step-02
+        agent: delphi-chief
+        label: Route to specialist agents for domain-specific analysis
+        deliverFrom: delphi-chief
+        execution: inline
+      - id: step-03
+        agent: delphi-chief
+        label: Architect the solution and validate design decisions
+        deliverFrom: delphi-chief
+        execution: inline
+      - id: step-04
+        agent: delphi-chief
+        label: Implement and review code against Delphi best practices
+        deliverFrom: delphi-chief
+        execution: inline
+      - id: step-05
+        agent: delphi-chief
+        label: Final review and Delphi Development Report delivery
+        deliverFrom: delphi-chief
+        execution: inline

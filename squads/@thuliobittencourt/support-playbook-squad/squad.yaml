@@ -1,0 +1,116 @@
+squad:
+  code: support-playbook-squad
+  name: Support Playbook Squad
+  description: "Playbook operacional completo para suporte e helpdesk — processos, fluxos de escalacao, SLAs, runbooks tecnicos, e politicas de atendimento. Da triagem ao pos-resolucao em um hub HTML navegavel com fluxogramas interativos."
+  icon: clipboard-list
+  version: "1.0.0"
+  category: support
+  tags:
+    - support
+    - playbook
+    - helpdesk
+    - escalation
+    - sla
+    - runbook
+    - processes
+    - operations
+    - customer-support
+    - service-desk
+    - interactive
+    - html
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "Gestores de suporte estruturando operacoes, coordenadores de helpdesk padronizando processos, founders definindo SLAs e fluxos de escalacao, e lideres de CS otimizando eficiencia operacional"
+  platform: "Report"
+  format: "support-playbook"
+
+  skills:
+    - web_search
+    - web_fetch
+    - frontend-design
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: playbook-chief
+      name: Playbook Chief
+      icon: crown
+      prompt: agents/playbook-chief.agent.md
+    - id: ops-researcher
+      name: Ops Researcher
+      icon: search
+      prompt: agents/ops-researcher.agent.md
+    - id: process-architect
+      name: Process Architect
+      icon: git-branch
+      prompt: agents/process-architect.agent.md
+    - id: sla-specialist
+      name: SLA Specialist
+      icon: timer
+      prompt: agents/sla-specialist.agent.md
+    - id: runbook-writer
+      name: Runbook Writer
+      icon: file-text
+      prompt: agents/runbook-writer.agent.md
+    - id: playbook-engineer
+      name: Playbook Engineer
+      icon: code
+      prompt: agents/playbook-engineer.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: playbook-chief
+        label: Receber briefing, diagnosticar maturidade operacional, identificar gaps
+        execution: inline
+      - id: step-02
+        agent: ops-researcher
+        label: Pesquisar benchmarks do setor, SLAs de referencia, ferramentas, melhores praticas
+        deliverFrom: playbook-chief
+        execution: inline
+      - id: step-03
+        agent: playbook-chief
+        label: Sintetizar brief unificado
+        deliverFrom: playbook-chief
+        execution: inline
+      - id: step-04
+        agent: process-architect
+        label: Definir fluxos de triagem, atendimento, escalacao, resolucao, pos-atendimento
+        deliverFrom: playbook-chief
+        execution: inline
+      - id: step-05
+        agent: sla-specialist
+        label: Definir SLAs, metricas operacionais, capacity planning
+        deliverFrom: playbook-chief
+        execution: inline
+      - id: step-06
+        agent: runbook-writer
+        label: Escrever runbooks tecnicos e procedimentos step-by-step para cenarios criticos
+        deliverFrom: playbook-chief
+        execution: inline
+      - id: step-07
+        agent: playbook-chief
+        label: Sintetizar Support Playbook Report integrando todos os outputs
+        deliverFrom: playbook-chief
+        execution: inline
+        output: support-playbook-report.md
+      - id: step-08
+        agent: playbook-chief
+        label: Quality checkpoint — validar completude e consistencia dos processos
+        deliverFrom: playbook-chief
+        execution: inline
+        checkpoint: true
+        on_reject: step-07
+      - id: step-09
+        agent: playbook-engineer
+        label: Gerar hub HTML navegavel com fluxogramas e checklists interativos
+        deliverFrom: playbook-chief
+        execution: inline
+        skill: frontend-design
+        output: support-playbook.html

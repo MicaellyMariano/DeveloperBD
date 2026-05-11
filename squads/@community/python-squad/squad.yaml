@@ -1,0 +1,92 @@
+squad:
+  code: python-squad
+  name: Python Squad
+  description: Full-stack Python development — Django, FastAPI, data engineering, ML, and testing with best practices from the Python ecosystem
+  icon: snake
+  version: "1.0.0"
+  category: development
+  tags:
+    - python
+    - django
+    - fastapi
+    - data-science
+    - ml
+    - pytest
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "Python developers, data engineers, and ML engineers"
+  platform: "Report"
+  format: "python-development"
+
+  skills:
+    - web_search
+    - web_fetch
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: python-chief
+      name: Python Chief
+      icon: snake
+      prompt: agents/python-chief.agent.md
+    - id: code-quality-advisor
+      name: Code Quality Advisor
+      icon: check-circle
+      prompt: agents/code-quality-advisor.agent.md
+    - id: devops-engineer
+      name: DevOps Engineer
+      icon: server
+      prompt: agents/devops-engineer.agent.md
+    - id: django-specialist
+      name: Django Specialist
+      icon: globe
+      prompt: agents/django-specialist.agent.md
+    - id: fastapi-specialist
+      name: FastAPI Specialist
+      icon: zap
+      prompt: agents/fastapi-specialist.agent.md
+    - id: data-engineer
+      name: Data Engineer
+      icon: database
+      prompt: agents/data-engineer.agent.md
+    - id: test-engineer
+      name: Test Engineer
+      icon: shield
+      prompt: agents/test-engineer.agent.md
+    - id: ml-engineer
+      name: ML Engineer
+      icon: cpu
+      prompt: agents/ml-engineer.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: python-chief
+        label: Diagnose Python challenge and identify relevant specialists
+        execution: inline
+      - id: step-02
+        agent: python-chief
+        label: Route to specialist agents for domain-specific implementation
+        deliverFrom: python-chief
+        execution: inline
+      - id: step-03
+        agent: python-chief
+        label: Architect the solution and validate design decisions
+        deliverFrom: python-chief
+        execution: inline
+      - id: step-04
+        agent: python-chief
+        label: Implement and review code against Python best practices
+        deliverFrom: python-chief
+        execution: inline
+      - id: step-05
+        agent: python-chief
+        label: Final review and Python Development Report delivery
+        deliverFrom: python-chief
+        execution: inline
