@@ -135,6 +135,29 @@
 - `PEDIDOS.codigo + PEDIDOS.codemp` → `ITENSPAD.codigo + ITENSPAD.codemp` (itens do pedido)
 - `PEDIDOS.codcli` → `CADASTRO.codigo` (cliente)
 
+### SQL-010 — Exportação Fiscal de Produtos para Excel (fonte: sistema)
+**Propósito:** Extrai campos fiscais dos produtos para o escritório contábil preencher e devolver para carga no sistema.
+**Uso:** Relatório → Excel → escritório preenche → reimporta atualizado no ERP.
+
+**PRODUTOS — campos fiscais confirmados:**
+- `class` — classificação do produto (FK para CLASSCOMERCIAL)
+- `situ` — CST/CSOSN padrão do produto (ex: '020', '040')
+- `ST` — flag/valor de Substituição Tributária
+- `CST_ICMS` — código CST do ICMS do produto
+- `CST_PIS` — código CST do PIS
+- `CST_COFINS` — código CST do COFINS
+- `CST_IPI` — código CST do IPI
+- `CST_NFCE` — CST específico para NFC-e (Cupom Fiscal Eletrônico)
+- `ORIGEM_CST` — origem da mercadoria (0=nacional, 1=estrangeiro importado, etc.)
+- `CFOP` — CFOP padrão do produto para NF-e
+- `CFOP_SAT` — CFOP específico para SAT/NFC-e
+- `ST_SAT` — ST específico para SAT
+- `CEST` — Código Especificador da Substituição Tributária (CEST)
+
+**Filtro padrão:** `DISPONIVEL = 'Sim'` — somente produtos ativos
+
+---
+
 ### SQL-009 — Movimentação Diária de Estoque (fonte: sistema)
 **Propósito:** Lista todos os registros de movimentação do estoque de um dia específico.
 
@@ -230,11 +253,20 @@ saldo_disponivel = produtos.est_saldo
 - `nf_valnota` — valor total da nota
 - `nf_modelo` — modelo do documento: NULL = NF-e comum, `'CTe'` = CT-e
 - `ini_municipio` — município de **origem** do CT-e (início da prestação de serviço)
+- `ini_uf` — UF de origem do CT-e
+- `municipio_termino_prest` — município de **destino** do CT-e (término da prestação) ← usar para "cidade de entrega"
+- `nf_municipiotransport` — município do transportador
 - `codemp` — empresa emissora
 
 **NOTAPROD** — notas de produtos vinculadas à NOTA
-- Join: `notaprod.codemp = nota.codemp AND notaprod.nf_numero = nota.nf_numero`
+- **LEFT JOIN** `notaprod.codemp = nota.codemp AND notaprod.nf_numero = nota.nf_numero`
 - Complementa dados da nota (produtos vinculados ao CT-e)
+- LEFT JOIN = retorna a NF mesmo sem itens em NOTAPROD
+
+**CADASTRO** — join via LEFT JOIN para CT-e
+- **LEFT JOIN** `cadastro.codigo = nota.nf_codcli`
+- `CADASTRO.nomraz` = razão social (confirmado neste contexto de CT-e)
+- `CADASTRO.cnpj` = CNPJ do emitente/destinatário
 
 **Filtros para CT-e autorizados:**
 - `nf_modelo = 'CTe'` — somente CT-e (ou NULL para NF-e)
@@ -436,5 +468,114 @@ Quantidade a comprar = saldo mínimo menos saldo atual (quando negativo = produt
 - **HIST_PED / HISTFIN** = 0 → históricos não utilizados
 - **SOLICITACAO_COMPRA / REGRAIMP** = 0 → não ativos
 
+### SQL-012 — Entregas CT-e por Cidade, Remetente e Destinatário (fonte: sistema)
+**Propósito:** Relatório da transportadora mostrando todas as entregas por cidade, com remetente (quem enviou) e destinatário (quem recebeu). Filtros opcionais por cidade e código do remetente.
+
+**Estrutura do CT-e na NOTA confirmada:**
+- `nf_codcli` = **DESTINATÁRIO** (quem recebeu a mercadoria = cliente do cliente)
+- `cod_remetente` = **REMETENTE** (quem enviou = cliente da transportadora)
+- `cod_tomador` = quem paga o frete (pode ser remetente ou destinatário)
+- `tomador` = campo texto: `'Remetente'` ou `'Destinatário'` — indica quem paga
+- `municipio_termino_prest` = cidade de **destino** (onde foi entregue)
+- `ini_municipio` = cidade de **origem** (de onde saiu)
+- `ini_uf` = UF de origem
+
+⚠️ `nf_codcli` em CT-e = DESTINATÁRIO, não o cliente que contratou o transporte!
+⚠️ Para filtrar pelo cliente da transportadora, usar `cod_remetente`, não `nf_codcli`
+
+**Cidades gravadas SEM acento nesta base:**
+- `BRAGANCA PAULISTA`, `HORTOLANDIA`, `JAGUARIUNA`, `SUMARE`, etc.
+- Busca por cidade: usar `CONTAINING` (case-insensitive, sem wildcards manuais)
+
+**Padrão para parâmetros opcionais em Firebird 2.5:**
+- String vazia como "sem filtro": `CAST(:CIDADE AS VARCHAR(100)) = '' OR campo CONTAINING CAST(:CIDADE AS VARCHAR(100))`
+- Inteiro zero como "sem filtro": `:CODCLI = 0 OR campo = :CODCLI`
+- ⚠️ NUNCA usar `:PARAM IS NULL` → erro "Unknown SQL Data type (32766)"
+- ⚠️ NUNCA usar LIKE com parâmetro sem CAST → erro "string right truncation"
+- ✅ Sempre usar `CAST(:PARAM AS VARCHAR(N))` em filtros com LIKE/CONTAINING
+
+**SQL final validado:**
+```sql
+SELECT
+    n.nf_emissao                                          AS data_emissao,
+    n.nfe                                                 AS numero_cte,
+    COALESCE(n.municipio_termino_prest, 'NAO INFORMADO') AS cidade_entrega,
+    COALESCE(rem.nomraz, 'NAO IDENTIFICADO')             AS remetente,
+    COALESCE(dest.nomraz, 'NAO IDENTIFICADO')            AS destinatario,
+    n.nf_valnota                                         AS valor
+FROM nota n
+LEFT JOIN cadastro rem  ON rem.codigo  = n.cod_remetente
+LEFT JOIN cadastro dest ON dest.codigo = n.nf_codcli
+WHERE n.nf_numero IS NOT NULL
+  AND n.nf_modelo = 'CTe'
+  AND n.nf_emissao >= :DATA_INI
+  AND n.nf_emissao <= :DATA_FIM
+  AND n.codemp IN (:CODEMP)
+  AND n.motivo = 'Autorizado o uso do CT-e'
+  AND (CAST(:CIDADE AS VARCHAR(100)) = '' OR n.municipio_termino_prest CONTAINING CAST(:CIDADE AS VARCHAR(100)))
+  AND (:CODCLI = 0 OR n.cod_remetente = :CODCLI)
+ORDER BY n.nfe
+```
+
+**Cidades disponíveis nesta base (CT-e codemp=1):**
+AMERICANA, AMPARO, ARTUR NOGUEIRA, BARUERI, BRAGANCA PAULISTA, CAMPINAS, CONCHAL, COTIA, DIADEMA, EXTREMA, FORTALEZA, FRANCO DA ROCHA, GUARULHOS, HOLAMBRA, HORTOLANDIA, INDAIATUBA, ITAPECERICA DA SERRA, ITUMBIARA, ITUPEVA, JAGUARIUNA, JUNDIAI, LEME, LIMEIRA, MACEIO, MAUA, MOGI GUACU, MOGI MIRIM, MORUNGABA, NOVA ODESSA, NOVO HAMBURGO, OSASCO, PEDREIRA, RAFARD, SALTO, SANTA BARBARA D'OESTE, SANTANA DE PARNAIBA, SANTO ANDRE, SANTO ANTONIO DE POSSE, SAO BERNARDO DO CAMPO, SAO CAETANO DO SUL, SAO PAULO, SERRA NEGRA, SOROCABA, SUMARE, VALINHOS, VARGEM GRANDE PAULISTA
+
+---
+
+### SQL-011 — Vendas por Horário dos Últimos 60 Dias (fonte: sistema)
+**Propósito:** Relatório analítico que mostra distribuição de vendas por hora do dia nos últimos 60 dias, com TOTAL consolidado via UNION.
+
+**PEDIDOS — campos novos confirmados:**
+- `DATACRIADO` — data de criação do pedido (tipo DATE). Diferente de `DATAEMISSAO` (data de emissão)
+  - `DATACRIADO` = quando o pedido foi registrado no sistema
+  - `DATAEMISSAO` = data de emissão oficial do pedido/faturamento
+- `HORACRIADO` — hora de criação do pedido (tipo TIME: HH:MM:SS)
+  - Uso: `EXTRACT(HOUR FROM pedidos.horacriado)` para agrupar por hora
+
+**STATUS = '5 - FINALIZADO'** confirmado como valor válido de PEDIDOS.STATUS
+- Padrão de valores confiramados: `'2 - EM SEPARAÇÃO'`, `'5 - FINALIZADO'`
+- Formato: número + espaço + hífen + espaço + descrição maiúscula
+
+**Padrões Firebird 2.5 para formatação de datas (sem TO_CHAR):**
+```sql
+-- Zero-padding manual via CASE WHEN
+CASE WHEN EXTRACT(DAY FROM campo) < 10
+     THEN '0' || CAST(EXTRACT(DAY FROM campo) AS VARCHAR(2))
+     ELSE CAST(EXTRACT(DAY FROM campo) AS VARCHAR(2))
+END
+-- Formato completo DD/MM/AAAA:
+CASE WHEN EXTRACT(DAY FROM d) < 10 THEN '0' ELSE '' END
+|| CAST(EXTRACT(DAY FROM d) AS VARCHAR(2)) || '/'
+|| CASE WHEN EXTRACT(MONTH FROM d) < 10 THEN '0' ELSE '' END
+|| CAST(EXTRACT(MONTH FROM d) AS VARCHAR(2)) || '/'
+|| CAST(EXTRACT(YEAR FROM d) AS VARCHAR(4))
+```
+- ⚠️ Firebird 2.5 NÃO tem TO_CHAR() ou FORMAT() — usar EXTRACT + CASE WHEN + concatenação
+
+**Padrão de janela de tempo rolante:**
+```sql
+WHERE pedidos.datacriado >= CURRENT_DATE - 60
+```
+- `CURRENT_DATE - 60` = últimos 60 dias a partir de hoje (Firebird suporta aritmética de datas diretamente)
+- Usar `DATACRIADO` (não DATAEMISSAO) para filtros de período de criação
+
+**Padrão de UNION com linha de TOTAL:**
+```sql
+SELECT hora, qtd_pedidos, valor_total, 1 AS ORDEM, hora_num AS HORA_ORDER FROM ...
+UNION ALL
+SELECT 'TOTAL', COUNT(*), SUM(...), 2 AS ORDEM, 99 AS HORA_ORDER FROM ...
+ORDER BY ORDEM, HORA_ORDER
+```
+- Técnica padrão para incluir linha de totais sem subquery: UNION ALL com coluna de ordenação artificial
+- ORDEM = 1 para detalhes, ORDEM = 2 para totais garante que TOTAL aparece no final
+
+**Filtros usados para vendas finalizadas (relatório de vendas):**
+- `pedidos.status = '5 - FINALIZADO'`
+- `(pedidos.cancelado = 'Não' OR pedidos.cancelado IS NULL)`
+- `pedidos.codemp IN (:CODEMP)`
+
+---
+
 ## Histórico de Execuções
 - 2026-05-11 | Mapeamento completo de 559 tabelas + contagem de registros | CEM.FDB
+- 2026-05-11 | SQL-011 registrado: vendas por horário, DATACRIADO/HORACRIADO, formatação de datas Firebird 2.5
