@@ -528,7 +528,7 @@ WHERE n.nf_numero IS NOT NULL
 ORDER BY n.nfe
 ```
 
-**SQL-012b — Resumo agrupado por remetente (cliente obrigatório):**
+**SQL-012b — "Entregas por Destinatário e Cidade — CT-e" (resumo agrupado, cliente obrigatório):**
 ```sql
 SELECT
     COALESCE(rem.nomraz, 'NAO IDENTIFICADO')             AS remetente,
@@ -536,7 +536,8 @@ SELECT
     COALESCE(dest.nomraz, 'NAO IDENTIFICADO')            AS destinatario,
     COUNT(n.nf_numero)                                    AS qtd_entregas,
     SUM(n.nf_valnota)                                     AS valor_total,
-    SUM(n.frete_valor)                                    AS valor_frete
+    SUM(n.frete_valor)                                    AS valor_frete,
+    LIST(n.nfe, ', ')                                     AS numeros_cte
 FROM nota n
 LEFT JOIN cadastro rem  ON rem.codigo  = n.cod_remetente
 LEFT JOIN cadastro dest ON dest.codigo = n.nf_codcli
@@ -550,6 +551,11 @@ WHERE n.nf_numero IS NOT NULL
 GROUP BY n.cod_remetente, rem.nomraz, n.municipio_termino_prest, n.nf_codcli, dest.nomraz
 ORDER BY n.municipio_termino_prest, qtd_entregas DESC
 ```
+
+**LIST() — agregação de valores em Firebird 2.5:**
+- `LIST(campo, ', ')` = concatena múltiplos valores em uma célula (equivalente ao GROUP_CONCAT do MySQL)
+- Exemplo: `LIST(n.nfe, ', ')` → `'42175, 42180, 42195'`
+- Disponível nativamente no Firebird 2.5 — usar sempre que precisar listar IDs/números agrupados
 
 **Padrão COALESCE para parâmetro opcional string no IBExpert:**
 - IBExpert envia NULL quando o campo é deixado em branco (não string vazia!)
@@ -618,4 +624,4 @@ ORDER BY ORDEM, HORA_ORDER
 ## Histórico de Execuções
 - 2026-05-11 | Mapeamento completo de 559 tabelas + contagem de registros | CEM.FDB
 - 2026-05-11 | SQL-011 registrado: vendas por horário, DATACRIADO/HORACRIADO, formatação de datas Firebird 2.5
-- 2026-05-11 | SQL-012 registrado: CT-e transportadora — remetente/destinatário, FRETE_VALOR, CONTAINING, COALESCE para NULL em IBExpert
+- 2026-05-12 | SQL-012 registrado: CT-e transportadora — remetente/destinatário, FRETE_VALOR, CONTAINING, COALESCE para NULL em IBExpert, LIST() para concatenar CT-e na linha
