@@ -572,6 +572,63 @@ AMERICANA, AMPARO, ARTUR NOGUEIRA, BARUERI, BRAGANCA PAULISTA, CAMPINAS, CONCHAL
 
 ---
 
+### SQL-014 — "Clientes Sem Compras no Período" (fonte: sistema)
+**Propósito:** Lista clientes que NÃO realizaram nenhuma compra dentro do período selecionado. Mostra a data da última compra (fora do período) e há quantos dias/meses não compram.
+
+**Lógica principal:** `NOT EXISTS` — exclui clientes que têm qualquer pedido aprovado dentro do período `:DATA_INI` a `:DATA_FIM`.
+
+**Padrão aprendido — BETWEEN com subquery não funciona em Firebird 2.5:**
+- ❌ `subquery BETWEEN :DATA_INI AND :DATA_FIM` → erro "Unsupported field type in BETWEEN"
+- ✅ Usar `>= :DATA_INI AND <= :DATA_FIM` separados
+- ✅ Ou reestruturar com `LEFT JOIN` + tabela derivada
+
+**Padrão de último pedido via LEFT JOIN (mais eficiente que subquery repetida):**
+```sql
+LEFT JOIN (
+    SELECT p.codcli, MAX(p.dataemissao) AS data_ultimo_pedido
+    FROM pedidos p
+    WHERE p.tipo = 'S' AND p.classpedido = 'Venda' AND p.aprovado = 1
+    GROUP BY p.codcli
+) ult ON ult.codcli = c.codigo
+```
+
+**DATEDIFF confirmado em Firebird 2.5:**
+- `DATEDIFF(MONTH, data, CURRENT_DATE)` → meses desde a data
+- `DATEDIFF(DAY, data, CURRENT_DATE)` → dias desde a data
+
+**SQL final validado:**
+```sql
+SELECT
+    c.codigo,
+    c.nomfant                                              AS cliente,
+    c.status,
+    ult.data_ultimo_pedido,
+    DATEDIFF(MONTH, ult.data_ultimo_pedido, CURRENT_DATE) AS meses,
+    DATEDIFF(DAY,   ult.data_ultimo_pedido, CURRENT_DATE) AS dias
+FROM cadastro c
+LEFT JOIN (
+    SELECT p.codcli, MAX(p.dataemissao) AS data_ultimo_pedido
+    FROM pedidos p
+    WHERE p.tipo = 'S'
+      AND p.classpedido = 'Venda'
+      AND p.aprovado = 1
+    GROUP BY p.codcli
+) ult ON ult.codcli = c.codigo
+WHERE c.codigo IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM pedidos p
+      WHERE p.codcli = c.codigo
+        AND p.tipo = 'S'
+        AND p.classpedido = 'Venda'
+        AND p.aprovado = 1
+        AND p.dataemissao >= :DATA_INI
+        AND p.dataemissao <= :DATA_FIM
+  )
+ORDER BY ult.data_ultimo_pedido DESC
+```
+
+---
+
 ### SQL-013 — Vendas por Dia e Hora com Período (fonte: sistema)
 **Propósito:** Lista pedidos de venda detalhados por dia e intervalo de hora, com filtro de período configurável pelo usuário.
 
