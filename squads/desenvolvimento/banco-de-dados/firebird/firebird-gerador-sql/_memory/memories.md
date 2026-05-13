@@ -528,7 +528,12 @@ WHERE n.nf_numero IS NOT NULL
 ORDER BY n.nfe
 ```
 
-**SQL-012b — "Entregas por Destinatário e Cidade — CT-e" (resumo agrupado, cliente obrigatório):**
+**SQL-012b — "Entregas por Destinatário e Cidade — CT-e" (versão final aprovada pelo cliente):**
+- Remetente obrigatório (`:CODCLI`)
+- Cidade opcional — vazio retorna todas, digitando parte do nome filtra
+- Sem campo de frete (cliente não precisava)
+- `LIST()` para mostrar números dos CT-e na linha agrupada
+
 ```sql
 SELECT
     COALESCE(rem.nomraz, 'NAO IDENTIFICADO')             AS remetente,
@@ -536,7 +541,6 @@ SELECT
     COALESCE(dest.nomraz, 'NAO IDENTIFICADO')            AS destinatario,
     COUNT(n.nf_numero)                                    AS qtd_entregas,
     SUM(n.nf_valnota)                                     AS valor_total,
-    SUM(n.frete_valor)                                    AS valor_frete,
     LIST(n.nfe, ', ')                                     AS numeros_cte
 FROM nota n
 LEFT JOIN cadastro rem  ON rem.codigo  = n.cod_remetente
@@ -548,6 +552,7 @@ WHERE n.nf_numero IS NOT NULL
   AND n.codemp IN (:CODEMP)
   AND n.motivo = 'Autorizado o uso do CT-e'
   AND n.cod_remetente = :CODCLI
+  AND (COALESCE(CAST(:CIDADE AS VARCHAR(100)), '') = '' OR n.municipio_termino_prest CONTAINING CAST(:CIDADE AS VARCHAR(100)))
 GROUP BY n.cod_remetente, rem.nomraz, n.municipio_termino_prest, n.nf_codcli, dest.nomraz
 ORDER BY n.municipio_termino_prest, qtd_entregas DESC
 ```
