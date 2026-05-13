@@ -572,6 +572,55 @@ AMERICANA, AMPARO, ARTUR NOGUEIRA, BARUERI, BRAGANCA PAULISTA, CAMPINAS, CONCHAL
 
 ---
 
+### SQL-013 — Vendas por Dia e Hora com Período (fonte: sistema)
+**Propósito:** Lista pedidos de venda detalhados por dia e intervalo de hora, com filtro de período configurável pelo usuário.
+
+**Diferença do SQL-011:** SQL-011 usa janela fixa de 60 dias e agrupa por hora. Este usa período livre e exibe cada pedido individualmente com dia + hora formatados.
+
+**PEDIDOS — campos e padrões confirmados:**
+- `STATUS = 'VENDA'` — novo valor de status confirmado (diferente de '5 - FINALIZADO' e '2 - EM SEPARAÇÃO')
+- `CLASSPEDIDO = 'Venda'` — filtro de classificação
+- `APROVADO = 1` — somente aprovados
+- `EXTRACT(HOUR FROM HORACRIADO) BETWEEN 6 AND 22` — filtra horário comercial
+
+**Padrão de filtro de período com DATACRIADO:**
+```sql
+AND CAST(DATACRIADO AS DATE) >= :DATA_INI
+AND CAST(DATACRIADO AS DATE) <= :DATA_FIM
+```
+- Usar `CAST(DATACRIADO AS DATE)` para comparar apenas a data, ignorando a hora
+
+**SQL final validado:**
+```sql
+SELECT
+    (CASE WHEN EXTRACT(DAY FROM CAST(DATACRIADO AS DATE)) < 10 THEN '0' ELSE '' END) ||
+    CAST(EXTRACT(DAY FROM CAST(DATACRIADO AS DATE)) AS VARCHAR(2)) || '/' ||
+    (CASE WHEN EXTRACT(MONTH FROM CAST(DATACRIADO AS DATE)) < 10 THEN '0' ELSE '' END) ||
+    CAST(EXTRACT(MONTH FROM CAST(DATACRIADO AS DATE)) AS VARCHAR(2)) || '/' ||
+    CAST(EXTRACT(YEAR FROM CAST(DATACRIADO AS DATE)) AS VARCHAR(4))  AS DIA,
+
+    (CASE WHEN EXTRACT(HOUR FROM HORACRIADO) < 10 THEN '0' ELSE '' END) ||
+    CAST(EXTRACT(HOUR FROM HORACRIADO) AS VARCHAR(2)) || ':00 - ' ||
+    (CASE WHEN EXTRACT(HOUR FROM HORACRIADO) < 10 THEN '0' ELSE '' END) ||
+    CAST(EXTRACT(HOUR FROM HORACRIADO) AS VARCHAR(2)) || ':59'        AS INTERVALO_HORA,
+
+    CODIGO                                AS NUMERO_PEDIDO,
+    1                                     AS TOTAL_PEDIDOS,
+    CAST(TOTALPEDIDO AS NUMERIC(15,2))    AS VALOR_TOTAL
+FROM PEDIDOS
+WHERE APROVADO = 1
+  AND CLASSPEDIDO = 'Venda'
+  AND STATUS = 'VENDA'
+  AND EXTRACT(HOUR FROM HORACRIADO) BETWEEN 6 AND 22
+  AND CAST(DATACRIADO AS DATE) >= :DATA_INI
+  AND CAST(DATACRIADO AS DATE) <= :DATA_FIM
+ORDER BY CAST(DATACRIADO AS DATE),
+         EXTRACT(HOUR FROM HORACRIADO),
+         CODIGO
+```
+
+---
+
 ### SQL-011 — Vendas por Horário dos Últimos 60 Dias (fonte: sistema)
 **Propósito:** Relatório analítico que mostra distribuição de vendas por hora do dia nos últimos 60 dias, com TOTAL consolidado via UNION.
 
