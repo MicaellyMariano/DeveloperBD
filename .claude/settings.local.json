@@ -14,7 +14,18 @@
       "PowerShell(python C:\\\\Temp\\\\consulta_flora5.py)",
       "PowerShell(python C:\\\\Temp\\\\consulta_flora6.py)",
       "PowerShell(python C:\\\\Temp\\\\consulta_flora_val.py)",
-      "PowerShell(python C:\\\\Temp\\\\consulta_flora_upd.py)"
+      "PowerShell(python C:\\\\Temp\\\\consulta_flora_upd.py)",
+      "PowerShell(python \"C:\\\\Temp\\\\compare_vendas.py\" \"C:\\\\Users\\\\ram-0003\\\\Downloads\\\\vendas dia 16-06 tirado �s 8h25 no dia 17-06-2026.csv\" \"C:\\\\Users\\\\ram-0003\\\\Downloads\\\\vendas dia 16-06 tirado �s 8h41 no dia 18-06-2026.csv\")",
+      "PowerShell(python C:\\\\Temp\\\\ver_294784.py)",
+      "PowerShell(python C:\\\\Temp\\\\totais_vendas.py)",
+      "PowerShell(python C:\\\\Temp\\\\analisa_remessa2.py)",
+      "PowerShell(python C:\\\\Temp\\\\analisa_remessa3.py)",
+      "PowerShell(python C:\\\\Temp\\\\analisa_retorno.py)",
+      "PowerShell(python C:\\\\Temp\\\\dump_retorno.py)",
+      "PowerShell(python C:\\\\Temp\\\\analisa_retorno2.py)",
+      "PowerShell(python C:\\\\Temp\\\\compara_prazo_protesto.py)",
+      "PowerShell(python C:\\\\Temp\\\\mostra_campo_visual.py)",
+      "PowerShell(python C:\\\\Temp\\\\gera_remessa_baixa.py)"
     ]
   }
 }
