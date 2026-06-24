@@ -25,7 +25,9 @@
       "PowerShell(python C:\\\\Temp\\\\analisa_retorno2.py)",
       "PowerShell(python C:\\\\Temp\\\\compara_prazo_protesto.py)",
       "PowerShell(python C:\\\\Temp\\\\mostra_campo_visual.py)",
-      "PowerShell(python C:\\\\Temp\\\\gera_remessa_baixa.py)"
+      "PowerShell(python C:\\\\Temp\\\\gera_remessa_baixa.py)",
+      "PowerShell(python -c \"import fdb; con = fdb.connect\\(dsn=r'C:\\\\Users\\\\ram-0003\\\\Desktop\\\\PENDENCIA CLIENTES\\\\CEM_industrianalin220626.FDB', user='SYSDBA', password='masterkey'\\); print\\('Conectado!'\\); con.close\\(\\)\")",
+      "PowerShell(python C:\\\\Temp\\\\analisa_pedido118537.py)"
     ]
   }
 }
