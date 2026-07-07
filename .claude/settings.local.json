@@ -27,7 +27,15 @@
       "PowerShell(python C:\\\\Temp\\\\mostra_campo_visual.py)",
       "PowerShell(python C:\\\\Temp\\\\gera_remessa_baixa.py)",
       "PowerShell(python -c \"import fdb; con = fdb.connect\\(dsn=r'C:\\\\Users\\\\ram-0003\\\\Desktop\\\\PENDENCIA CLIENTES\\\\CEM_industrianalin220626.FDB', user='SYSDBA', password='masterkey'\\); print\\('Conectado!'\\); con.close\\(\\)\")",
-      "PowerShell(python C:\\\\Temp\\\\analisa_pedido118537.py)"
+      "PowerShell(python C:\\\\Temp\\\\analisa_pedido118537.py)",
+      "PowerShell(\\(Get-Content \"C:\\\\Users\\\\ram-0003\\\\.claude\\\\projects\\\\c--Users-ram-0003-Documents-GitHub-DeveloperBD\\\\a100ae82-53d4-4114-8172-c23e8386b847\\\\tool-results\\\\b743rpbps.txt\" | Measure-Object -Line\\).Lines)",
+      "PowerShell(python C:\\\\Temp\\\\explora_caixa_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\explora_caixa2_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\investiga_caixa_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\investiga_caixa3_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\investiga_caixa4_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\investiga_caixa5_blackbox.py)",
+      "PowerShell(python C:\\\\Temp\\\\investiga_caixa6_blackbox.py)"
     ]
   }
 }
