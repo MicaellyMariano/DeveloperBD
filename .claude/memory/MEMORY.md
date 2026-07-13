@@ -2,4 +2,14 @@
 
 - [Perfil da usuária Micaelly](user_profile.md) — Sistema RAM, Firebird, IBExpert, troca de PC (ram → ram-0003)
 - [Projeto DeveloperBD](project_developerbd.md) — RelatoriosCEM Python/tkinter, fix fdb named params, estrutura banco CEM.FDB
-- [Tabelas do Sistema RAM](project_tabelas_ram.md) — Mapeamento oficial das principais tabelas (PRODUTOS, ESTOQUE, PEDIDOS, REFS, etc.)
+- [Tabelas do Sistema RAM](project_tabelas_ram.md) — Mapeamento oficial das principais tabelas (PRODUTOS, ESTOQUE, PEDIDOS, REFS, ESTOQUE_LOTE, etc.)
+- [CNAB 400 Itaú — Prazo de Protesto](technical_cnab400_itau.md) — pos 392-393 (0-indexed 391:393) = dias protesto; 00 causa banco protestar em 2 dias
+- [Firebird Sort Record Too Big](technical_firebird_sort.md) — SELECT refs.* com 86+ cols estoura 64KB; fix: listar colunas explícitas
+- [ESTOQUE vs ESTOQUE_LOTE no cancelamento](technical_estoque_lote.md) — ESTOQUE deleta linha; ESTOQUE_LOTE só limpa se "controlar lote" estiver ativo no status
+- [Bug caixa pedido VÁRIOS com DINHEIRO](technical_caixa_varios_bug.md) — tela e CONTROLECAIXA_ITENS usam TOTALPEDIDO em vez do split real; fix: UPDATE CONTROLECAIXA_ITENS
+- [Editar pedido entrada→saída](technical_estoque_entrada_saida.md) — sistema reverte +X e aplica -X; saldo parece dobrar mas é correto. QTDATUAL=0 inofensivo se tela usa ESTOQUE.SALDO
+- [Tabela de preço filtro TIPO+DISPONIVEL](technical_tabelapreco_tipo.md) — função usa TIPO='PRODUTO ACABADO' AND DISPONIVEL='Sim'; se TIPO vazio, usa só DISPONIVEL. Fix: UPDATE produtos SET tipo=NULL
+- [MOVIMENT datas erradas — caixa aberto vários dias](technical_moviment_datas.md) — DATA_PATO grava data do fechamento em vez da venda; fix: UPDATE moviment/refs com data correta
+- [NF-e CFOP 6501 uTrib — comércio exterior](technical_nfe_cfop6501_utrib.md) — CJ=2×UN, KIT4=4×UN; NCM 63026000 toalha "em malha" suspeita NCM errado (nem UN nem PC passam)
+- [IBS/CBS bugs Sistema RAM v18](technical_ibscbs_sistema_ram.md) — Bug 1: gRed indevido (fix config); Bug 2: gTribRegular não gerado para CST550+cClassTrib=550001 (bug código)
+- [Financeiro duplicado — clique múltiplo em Realizar](technical_financeiro_duplic_realizar.md) — operador clica "Realizar" N vezes, gera parcelas duplicadas com PARCELA_ORIGEM; verificar se canceladas

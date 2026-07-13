@@ -18,6 +18,10 @@ Mapeamento das tabelas do Sistema RAM (Firebird/Delphi):
 - **PEDIDOS** — Dados do pedido (orçamentos, pedidos e PDV)
 - **ITENSPAD** — Itens dos pedidos armazenados em PEDIDOS
 - **CONF_IMP_CAMPOS** — Opções da esteira de configuração de custo da tela de entrada de produtos por XML
+- **ESTOQUE_LOTE** — Rastreio de movimentações por lote. Campos: `CODPROD`, `LOTE`, `QTD_ENTRADA`, `QTD_SAIDA`, `CODORIGEM`, `TIPO` (E=entrada/S=saída), `STATUS`. Ver [[technical-estoque-lote]] para comportamento no cancelamento.
+- **CONTROLECAIXA_ITENS** — Itens de lançamentos de caixa
+- **ITENSPAD** — Colunas importantes: `CODPROD` (não PRODUTO, não CODPRO), `PRECOFINAL`, `QTD`, `LOTE`
+- **PEDIDOS** — Colunas importantes: `DATAEMISSAO` (não DATA), `DATA_MOVIMENTACAO_EST` (null = estoque nunca movimentou)
 
 **Why:** Definição oficial fornecida pela usuária para evitar confusões nas consultas.
 **How to apply:** Usar sempre esses conceitos ao analisar queries, erros e estrutura do banco.
