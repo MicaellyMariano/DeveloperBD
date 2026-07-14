@@ -13,3 +13,4 @@
 - [NF-e CFOP 6501 uTrib — comércio exterior](technical_nfe_cfop6501_utrib.md) — CJ=2×UN, KIT4=4×UN; NCM 63026000 toalha "em malha" suspeita NCM errado (nem UN nem PC passam)
 - [IBS/CBS bugs Sistema RAM v18](technical_ibscbs_sistema_ram.md) — Bug 1: gRed indevido (fix config); Bug 2: gTribRegular não gerado para CST550+cClassTrib=550001 (bug código)
 - [Financeiro duplicado — clique múltiplo em Realizar](technical_financeiro_duplic_realizar.md) — operador clica "Realizar" N vezes, gera parcelas duplicadas com PARCELA_ORIGEM; verificar se canceladas
+- [NF-e troco ausente — arredondamento vPag vs vNF](technical_nfe_troco_arredondamento.md) — vPag 0,01 maior que vNF por arredondamento da fatura; fix: igualar vPag ao vNF ou adicionar vTroco
