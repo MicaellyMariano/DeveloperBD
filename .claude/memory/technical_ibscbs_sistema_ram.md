@@ -40,7 +40,7 @@ Sistema RAM v18.0.1.9. A partir de 2026, NF-e exige campos IBS/CBS (Reforma Trib
 
 Com CST=550, pIBSUF e pCBS devem ser 0.0000 / vIBSUF e vCBS devem ser 0.00. As alíquotas vão dentro de gTribRegular (alíquotas que seriam cobradas sem o benefício).
 
-**Status:** sem solução via configuração — requer correção de código no Sistema RAM.
+**Status:** RESOLVIDO via configuração. Existe um cadastro no sistema onde é possível configurar o gTribRegular — localização exata a confirmar (NF 8252 transmitida com sucesso após configuração).
 
 ## Observação adicional
 Mesmo após alterar "Cadastro de Reduções", os XMLs gerados continuavam com pIBSUF/pCBS com valor (ex: 0.1000 e 0.9000), indicando que o sistema ignora a configuração ou recalcula independentemente.
