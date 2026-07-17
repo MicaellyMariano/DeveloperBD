@@ -18,3 +18,6 @@
 - [Replicador — Column unknown](technical_replicador_column_unknown.md) — erro -206 no replicador = versão desatualizada; solução: atualizar o replicador (não ALTER TABLE manual)
 - [Firebird queries pesadas cross-período](technical_firebird_query_pesada.md) — NOT EXISTS trava IBExpert; usar LEFT JOIN anti-join com subqueries derivadas ou Python dois passos
 - [Produtor rural — dois docs, um pagamento](technical_produtor_rural_financeiro.md) — nota do produtor + nota de entrada = mesma compra; só 1 lançamento financeiro
+- [Relatório Dinâmico SQL — servidor, não cliente](technical_relatorio_dinamico_sql.md) — SQL fica no app.ramnuvem; USER_RELAT_* no FDB do cliente fica vazio
+- [CLASSCOMERCIAL.ARVORE e PRODUTOS.TIPO](technical_classcomercial_arvore.md) — ARVORE é hierarquia `.0.PAI..FILHO.`; TIPO='QUEIJOS' melhor que lista fixa de nomes
+- [V_ESTOQUE_LOTE — estrutura e armadilhas](technical_vestoque_lote.md) — ENTRADA/SAIDA são qtds; datas de movimento ficam em ESTOQUE_LOTE.DATA_ENTRADA

@@ -47,3 +47,31 @@ Mesmo após alterar "Cadastro de Reduções", os XMLs gerados continuavam com pI
 
 **Why:** cliente DOME FLAIBAM NF 8252 com roupões, CFOP 6501, cBenef SP070050.
 **How to apply:** ao receber erros de IBS/CBS, verificar se é Bug 1 (gRed) ou Bug 2 (gTribRegular). Bug 1 tem fix de config; Bug 2 não tem fix no v18.0.1.9.
+
+## Bug 3 — IBSCBSTot na posição errada dentro de `<total>` (ERRO 1871)
+
+**Erro SEFAZ:** "Element 'IBSCBSTot': This element is not expected. Expected is one of ( ISSQNtot, retTrib )"
+
+**Causa:** O sistema gerava `<IBSCBSTot>` imediatamente após `<ICMSTot>`, mas o schema da SEFAZ exige que venha depois de `<ISSQNtot>` e `<retTrib>`.
+
+**XML gerado (errado):**
+```xml
+<total>
+  <ICMSTot>...</ICMSTot>
+  <IBSCBSTot>...</IBSCBSTot>  ← posição errada
+  <vNFTot>...</vNFTot>
+</total>
+```
+
+**XML correto:**
+```xml
+<total>
+  <ICMSTot>...</ICMSTot>
+  <ISSQNtot/>   (opcional)
+  <retTrib/>    (opcional)
+  <IBSCBSTot>...</IBSCBSTot>  ← depois de retTrib
+  <vNFTot>...</vNFTot>
+</total>
+```
+
+**Fix:** Atualizar arquivos dependentes do Sistema RAM (DLLs/componentes). Não requer atualização do sistema principal nem do servidor. Confirmado resolvido em 17/07/2026 (cliente J.E. MAURANO AMPARO, NF 158478, v18.0.1.12).
