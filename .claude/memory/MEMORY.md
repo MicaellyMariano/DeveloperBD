@@ -14,3 +14,7 @@
 - [IBS/CBS bugs Sistema RAM v18](technical_ibscbs_sistema_ram.md) — Bug 1: gRed indevido (fix config); Bug 2: gTribRegular não gerado para CST550+cClassTrib=550001 (bug código)
 - [Financeiro duplicado — clique múltiplo em Realizar](technical_financeiro_duplic_realizar.md) — operador clica "Realizar" N vezes, gera parcelas duplicadas com PARCELA_ORIGEM; verificar se canceladas
 - [NF-e troco ausente — arredondamento vPag vs vNF](technical_nfe_troco_arredondamento.md) — vPag 0,01 maior que vNF por arredondamento da fatura; fix: igualar vPag ao vNF ou adicionar vTroco
+- [NF-e CST-20 SP020520 — pRedBC 33,33%](technical_nfe_predbc_sp020520.md) — "carga tributária 12%" = taxa efetiva; com alíquota 18%, pRedBC deve ser 33,33% (não 12%)
+- [Replicador — Column unknown](technical_replicador_column_unknown.md) — erro -206 no replicador = versão desatualizada; solução: atualizar o replicador (não ALTER TABLE manual)
+- [Firebird queries pesadas cross-período](technical_firebird_query_pesada.md) — NOT EXISTS trava IBExpert; usar LEFT JOIN anti-join com subqueries derivadas ou Python dois passos
+- [Produtor rural — dois docs, um pagamento](technical_produtor_rural_financeiro.md) — nota do produtor + nota de entrada = mesma compra; só 1 lançamento financeiro
