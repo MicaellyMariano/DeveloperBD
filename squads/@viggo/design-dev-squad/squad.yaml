@@ -1,0 +1,108 @@
+squad:
+  code: design-dev-squad
+  name: Design & Dev Squad
+  description: Full-stack design and development — from UX research and UI design to React, Node.js, Vue, and production delivery
+  icon: layers
+  version: "1.0.0"
+  category: development
+  tags:
+    - design
+    - ux
+    - ui
+    - react
+    - nodejs
+    - vue
+    - fullstack
+    - javascript
+    - typescript
+
+  company: "_expxagents/_memory/company.md"
+  preferences: "_expxagents/_memory/preferences.md"
+  memory: "_memory/memories.md"
+
+  target_audience: "Product teams, designers, and JavaScript developers"
+  platform: "Report"
+  format: "design-development"
+
+  skills:
+    - web_search
+    - web_fetch
+
+  schedule:
+    enabled: true
+
+  data: []
+
+  agents:
+    - id: squad-lead
+      name: Vitor Campos
+      icon: zap
+      prompt: agents/squad-lead.agent.md
+    - id: ux-designer
+      name: Sofia Almeida
+      icon: eye
+      prompt: agents/ux-designer.agent.md
+    - id: ui-designer
+      name: Clara Dias
+      icon: pen-tool
+      prompt: agents/ui-designer.agent.md
+    - id: react-dev
+      name: Pedro Alves
+      icon: layers
+      prompt: agents/react-dev.agent.md
+    - id: node-dev
+      name: Marcos Souza
+      icon: cpu
+      prompt: agents/node-dev.agent.md
+    - id: vue-dev
+      name: André Costa
+      icon: triangle
+      prompt: agents/vue-dev.agent.md
+    - id: fullstack-arch
+      name: Ricardo Melo
+      icon: globe
+      prompt: agents/fullstack-arch.agent.md
+    - id: quality-engineer
+      name: Beatriz Lima
+      icon: shield
+      prompt: agents/quality-engineer.agent.md
+    - id: devops-engineer
+      name: Gabriel Santos
+      icon: server
+      prompt: agents/devops-engineer.agent.md
+    - id: database-engineer
+      name: Laura Ferreira
+      icon: database
+      prompt: agents/database-engineer.agent.md
+
+  pipeline:
+    steps:
+      - id: step-01
+        agent: squad-lead
+        label: Diagnose challenge, classify (design / dev / fullstack), define routing plan
+        execution: inline
+      - id: step-02
+        agent: ux-designer
+        label: UX research, user flows, and wireframe direction (when design is in scope)
+        deliverFrom: squad-lead
+        execution: inline
+      - id: step-03
+        agent: ui-designer
+        label: Visual design, component spec, and design-system tokens (when design is in scope)
+        deliverFrom: ux-designer
+        execution: inline
+      - id: step-04
+        agent: squad-lead
+        label: Route to implementation specialists — React, Node, Vue, DB, DevOps as needed
+        deliverFrom: ui-designer
+        execution: inline
+      - id: step-05
+        agent: quality-engineer
+        label: Audit design fidelity, code quality, accessibility, and test coverage
+        deliverFrom: squad-lead
+        execution: inline
+      - id: step-06
+        agent: squad-lead
+        label: Synthesize all outputs and deliver the Design & Development Report
+        deliverFrom: quality-engineer
+        execution: inline

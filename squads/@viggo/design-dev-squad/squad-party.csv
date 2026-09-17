@@ -1,0 +1,11 @@
+id,name,role,color,avatar_url
+squad-lead,Vitor Campos,Squad Lead,#6366F1,https://api.dicebear.com/9.x/adventurer/svg?seed=VitorCampos
+ux-designer,Sofia Almeida,UX Designer,#0EA5E9,https://api.dicebear.com/9.x/adventurer/svg?seed=SofiaAlmeida
+ui-designer,Clara Dias,UI Designer,#A855F7,https://api.dicebear.com/9.x/adventurer/svg?seed=ClaraDias
+react-dev,Pedro Alves,React Developer,#3B82F6,https://api.dicebear.com/9.x/adventurer/svg?seed=PedroAlves
+node-dev,Marcos Souza,Node.js Developer,#10B981,https://api.dicebear.com/9.x/adventurer/svg?seed=MarcosSouza
+vue-dev,André Costa,Vue Developer,#22C55E,https://api.dicebear.com/9.x/adventurer/svg?seed=AndreCosta
+fullstack-arch,Ricardo Melo,Fullstack Architect,#F59E0B,https://api.dicebear.com/9.x/adventurer/svg?seed=RicardoMelo
+quality-engineer,Beatriz Lima,Quality Engineer,#EF4444,https://api.dicebear.com/9.x/adventurer/svg?seed=BeatrizLima
+devops-engineer,Gabriel Santos,DevOps Engineer,#8B5CF6,https://api.dicebear.com/9.x/adventurer/svg?seed=GabrielSantos
+database-engineer,Laura Ferreira,Database Engineer,#F97316,https://api.dicebear.com/9.x/adventurer/svg?seed=LauraFerreira
