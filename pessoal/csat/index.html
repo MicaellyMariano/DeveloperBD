@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Avaliação de Atendimento — Sistema RAM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root {
+  --bg: #F2F5FB; --card: #FFFFFF; --text: #17213A; --text2: #5A6480;
+  --text3: #9AA2B8; --border: #DDE3F0; --blue: #2760FF; --blue-h: #1A4EE0;
+  --gold: #F59E0B; --gold-bg: rgba(245,158,11,0.08);
+  --prize-bg: #EDFAF3; --prize-border: #86EFAC; --prize-text: #14532D;
+  --radius: 18px; --radius-sm: 10px; --shadow: 0 2px 16px rgba(23,33,58,0.07);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0D1424;--card:#182035;--text:#EEF1F8;--text2:#8A96B4;--text3:#4E5874;
+    --border:#262F4A;--blue:#4F80FF;--blue-h:#3A6BFF;--gold-bg:rgba(245,158,11,0.12);
+    --prize-bg:rgba(20,83,45,0.25);--prize-border:#166534;--prize-text:#4ADE80;
+    --shadow:0 2px 20px rgba(0,0,0,0.3);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0D1424;--card:#182035;--text:#EEF1F8;--text2:#8A96B4;--text3:#4E5874;
+  --border:#262F4A;--blue:#4F80FF;--blue-h:#3A6BFF;--gold-bg:rgba(245,158,11,0.12);
+  --prize-bg:rgba(20,83,45,0.25);--prize-border:#166534;--prize-text:#4ADE80;
+  --shadow:0 2px 20px rgba(0,0,0,0.3);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  font-size:15px;line-height:1.6;display:flex;justify-content:center;align-items:flex-start;
+  padding:40px 16px 64px;}
+
+.wrap{width:100%;max-width:420px;display:flex;flex-direction:column;gap:16px;}
+.brand{text-align:center;padding-bottom:4px;}
+.brand-name{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text3);}
+.brand h1{margin-top:14px;font-size:24px;font-weight:800;text-wrap:balance;
+  line-height:1.2;letter-spacing:-.4px;}
+.brand p{margin-top:6px;font-size:14px;color:var(--text2);}
+.brand .atag{display:inline-block;margin-top:10px;background:var(--border);
+  color:var(--text2);font-size:12px;font-weight:600;padding:3px 11px;border-radius:99px;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:28px 24px;display:flex;flex-direction:column;gap:20px;}
+
+.stars-wrap{text-align:center;}
+.stars-eyebrow{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:14px;}
+.stars-row{display:flex;justify-content:center;gap:4px;}
+.star-btn{background:none;border:none;cursor:pointer;padding:5px;border-radius:8px;
+  line-height:0;-webkit-tap-highlight-color:transparent;transition:transform .12s;}
+.star-btn:hover{transform:scale(1.15);background:var(--gold-bg);}
+.star-btn svg{width:38px;height:38px;display:block;}
+.star-btn .s-fill{fill:#E8EBF5;transition:fill .1s;}
+.star-btn.lit .s-fill,.star-btn.pre .s-fill{fill:var(--gold);}
+.star-word{margin-top:10px;font-size:13px;font-weight:600;color:var(--text3);min-height:18px;}
+.star-word.chosen{color:var(--gold);}
+
+.rule{height:1px;background:var(--border);margin-inline:-24px;}
+
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text2);}
+.field label span{font-weight:400;text-transform:none;letter-spacing:0;color:var(--text3);}
+.field input,.field textarea{background:var(--bg);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px 13px;font-family:inherit;font-size:15px;
+  color:var(--text);width:100%;transition:border-color .15s,box-shadow .15s;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(39,96,255,.12);}
+.field textarea{resize:vertical;min-height:88px;line-height:1.5;}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3);}
+
+.err{background:#FFF1F2;border:1px solid #FECDD3;border-radius:var(--radius-sm);
+  color:#9F1239;font-size:13px;font-weight:500;padding:9px 13px;}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .err{background:rgba(159,18,57,.2);border-color:rgba(253,164,175,.2);color:#FDA4AF;}}
+:root[data-theme="dark"] .err{background:rgba(159,18,57,.2);border-color:rgba(253,164,175,.2);color:#FDA4AF;}
+
+.btn{background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);
+  padding:13px 20px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  width:100%;transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 2px 8px rgba(39,96,255,.28);}
+.btn:hover:not(:disabled){background:var(--blue-h);box-shadow:0 4px 14px rgba(39,96,255,.36);}
+.btn:active:not(:disabled){transform:scale(.98);}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+
+.prize{background:var(--prize-bg);border:1px solid var(--prize-border);
+  border-radius:var(--radius-sm);padding:13px 15px;display:flex;gap:10px;align-items:flex-start;}
+.prize-ico{font-size:18px;flex-shrink:0;line-height:1.4;}
+.prize p{font-size:13px;color:var(--prize-text);line-height:1.5;font-weight:500;}
+.prize p strong{font-weight:700;}
+
+.ty{text-align:center;padding:36px 24px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.ty-ico{font-size:54px;line-height:1;}
+.ty h2{font-size:22px;font-weight:800;margin-top:4px;}
+.ty p{font-size:14px;color:var(--text2);max-width:280px;}
+
+/* ── Admin ── */
+.admin{width:100%;max-width:960px;display:flex;flex-direction:column;gap:16px;}
+.admin-hd{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.admin-hd h1{font-size:20px;font-weight:800;}
+.admin-hd p{font-size:12px;color:var(--text3);margin-top:2px;}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;}
+.kpi-num{font-size:34px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;line-height:1;}
+.kpi-lbl{font-size:13px;color:var(--blue);font-weight:600;margin-top:5px;}
+.kpi-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.kpi-badge{margin-top:10px;}
+.bdg{display:inline-block;font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;}
+.bdg-g{background:#DCFCE7;color:#15803D;} .bdg-b{background:#DBEAFE;color:#1D4ED8;}
+.bdg-y{background:#FEF9C3;color:#A16207;} .bdg-r{background:#FEE2E2;color:#B91C1C;}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .bdg-g{background:rgba(21,128,61,.25);color:#4ADE80;}
+  :root:not([data-theme="light"]) .bdg-b{background:rgba(29,78,216,.25);color:#93C5FD;}
+  :root:not([data-theme="light"]) .bdg-y{background:rgba(161,98,7,.25);color:#FDE047;}
+  :root:not([data-theme="light"]) .bdg-r{background:rgba(185,28,28,.25);color:#FCA5A5;}
+}
+:root[data-theme="dark"] .bdg-g{background:rgba(21,128,61,.25);color:#4ADE80;}
+:root[data-theme="dark"] .bdg-b{background:rgba(29,78,216,.25);color:#93C5FD;}
+:root[data-theme="dark"] .bdg-y{background:rgba(161,98,7,.25);color:#FDE047;}
+:root[data-theme="dark"] .bdg-r{background:rgba(185,28,28,.25);color:#FCA5A5;}
+
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px 20px;}
+.chart-ttl{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;}
+
+.ag-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.ag-tbl th{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);padding:6px 0;text-align:left;border-bottom:1px solid var(--border);}
+.ag-tbl td{padding:10px 0;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;}
+.ag-tbl tr:last-child td{border-bottom:none;}
+.ag-name{color:var(--text);font-weight:600;font-size:13px;}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-sm);}
+.tbl-wrap table{width:100%;border-collapse:collapse;background:var(--card);font-size:13px;}
+.tbl-wrap thead{background:var(--bg);}
+.tbl-wrap th{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+.tbl-wrap td{padding:11px 14px;color:var(--text2);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.4;}
+.tbl-wrap tr:last-child td{border-bottom:none;}
+.tbl-wrap td.name{color:var(--text);font-weight:600;}
+.empty{text-align:center;color:var(--text3);padding:44px 20px;}
+
+.resp-hd{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:2px;}
+.filter-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.filter-sel{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;
+  padding:6px 10px;font-family:inherit;font-size:12px;color:var(--text);cursor:pointer;}
+.filter-chk{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;}
+
+.period-bar{display:flex;gap:4px;flex-wrap:wrap;}
+.period-btn{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 13px;
+  font-family:inherit;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;
+  transition:all .15s;white-space:nowrap;}
+.period-btn:hover{border-color:var(--blue);color:var(--blue);}
+.period-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+/* admin gate */
+#admin-gate{position:fixed;top:50px;right:14px;background:var(--card);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px;width:260px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:20;}
+
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .kpi-grid .kpi-card:last-child{grid-column:span 2;}
+  .charts-row{grid-template-columns:1fr;}
+  .card{padding:22px 16px;}
+  .star-btn svg{width:32px;height:32px;}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- iframe oculto para submit sem CORS -->
+<iframe name="_csat_frame" style="display:none" aria-hidden="true"></iframe>
+<form id="_csat_form" method="GET" target="_csat_frame" style="display:none">
+  <input type="hidden" name="action" value="submit">
+  <input type="hidden" name="nome" id="_f_nome">
+  <input type="hidden" name="estrelas" id="_f_estrelas">
+  <input type="hidden" name="comentario" id="_f_comentario">
+  <input type="hidden" name="atendente" id="_f_atendente">
+</form>
+
+<!-- ícone de login (equipe) -->
+<button onclick="toggleGate()" title="Equipe" hidden id="admin-icon"
+  style="position:fixed;top:14px;right:14px;background:none;border:none;cursor:pointer;padding:6px;
+    color:var(--text3);opacity:.55;transition:opacity .2s;line-height:0;z-index:10"
+  onmouseover="this.style.opacity='1'" onmouseleave="this.style.opacity='.55'">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+  </svg>
+</button>
+
+<div id="admin-gate" hidden>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input id="admin-pw" type="password" placeholder="Senha"
+      style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;
+        padding:8px 11px;font-family:inherit;font-size:14px;color:var(--text)"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <button onclick="checkPw()" class="btn" style="width:auto;padding:8px 14px;font-size:14px">→</button>
+  </div>
+  <p id="pw-err" style="color:#e11d48;font-size:12px;margin-top:6px;display:none">Senha incorreta.</p>
+</div>
+
+<div id="root"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  CONFIGURAÇÃO — cole aqui a URL do Apps Script
+// ══════════════════════════════════════════════════
+const SCRIPT_URL = 'https://csat-proxy.sistemaram.workers.dev';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp6OUCkWE6iNG80E3mH1k_R3boc6sMf6pT0HnOE4Q_25sjlK_VODrsEd8p6PYkD9o3k17Oj-Txgqz7/pub?output=csv';
+
+const ADMIN_HASH = '6ad8058ce2e1aada2b0eb7a70e1d9b03d4cdc0a4aa824ba7e130d1f9f114a799';
+async function hashPass(pw){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw)); return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+// ══════════════════════════════════════════════════
+const WORDS = ['Ruim','Regular','Bom','Muito bom','Excelente'];
+
+// Lê parâmetros da URL (funciona em página real, diferente do artifact)
+const _params   = new URLSearchParams(location.search);
+const _aParam   = (_params.get('a') || '').trim();
+const _isAdmUrl = _params.has('admin');
+
+let isAdmin   = _isAdmUrl;
+let atendente = _aParam; // nome vem direto: ?a=Micaelly+Mariano
+
+let _savedName = '';
+try { _savedName = localStorage.getItem('csat_nome') || ''; } catch(e) {}
+let _draftName = _savedName, _draftComent = '';
+let rating = 0, hov = 0, done = false, busy = false, err = '';
+
+let adminRows = null, adminErr = '', adminBusy = false;
+let adminAgentFilter = 'todos', adminOnlyComment = false, adminPeriod = 'tudo';
+
+// Mostra ícone de login apenas em modo não-admin
+if (!isAdmin) document.getElementById('admin-icon').hidden = false;
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function starSVG(idx){
+  const active = idx < rating || (hov > 0 && idx < hov);
+  return `<button class="star-btn${active?' lit':''}" data-i="${idx}" aria-label="${idx+1} estrela${idx>0?'s':''}"><svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg"><polygon class="s-fill" points="22,3 27.5,16 42,17.5 31,27.5 34.5,42 22,34.5 9.5,42 13,27.5 2,17.5 16.5,16"/></svg></button>`;
+}
+
+function formHTML(){
+  if (done) return `<div class="wrap">
+    <div class="card ty">
+      <div class="ty-ico">🌟</div>
+      <h2>Obrigado pela avaliação!</h2>
+      <p>Sua opinião nos ajuda a melhorar o atendimento a cada dia.</p>
+    </div>
+    <div class="prize"><div class="prize-ico">🎁</div>
+      <p>Você <strong>concorreu a um brinde</strong> no sorteio de fim de ano! Os ganhadores serão anunciados em dezembro. Boa sorte! 🍀</p>
+    </div></div>`;
+
+  const word = rating>0 ? WORDS[rating-1] : (hov>0 ? WORDS[hov-1] : 'Escolha uma nota');
+  const hasWord = rating>0 || hov>0;
+  return `<div class="wrap">
+    <div class="brand">
+      <span class="brand-name">Sistema RAM</span>
+      <h1>Como foi o seu atendimento?</h1>
+      <p>Leva menos de 1 minuto — vale a pena!</p>
+      ${atendente ? `<span class="atag">Atendente: ${esc(atendente)}</span>` : ''}
+    </div>
+    <div class="card">
+      <div class="stars-wrap">
+        <div class="stars-eyebrow">Sua nota</div>
+        <div class="stars-row" id="sr">${[0,1,2,3,4].map(starSVG).join('')}</div>
+        <div class="star-word${hasWord?' chosen':''}" id="sw">${esc(word)}</div>
+      </div>
+      <div class="rule"></div>
+      <div class="field">
+        <label for="nome">Nome <span>(ou empresa)</span></label>
+        <input id="nome" type="text" placeholder="Ex: Fulano, Sistema RAM" autocomplete="name" value="${esc(_draftName)}">
+      </div>
+      <div class="field">
+        <label for="coment">Comentário <span>(opcional)</span></label>
+        <textarea id="coment" placeholder="O que achou do atendimento?">${esc(_draftComent)}</textarea>
+      </div>
+      ${err ? `<div class="err">${esc(err)}</div>` : ''}
+      <button class="btn" ${busy?'disabled':''} onclick="submit()">
+        ${busy ? 'Enviando…' : 'Enviar avaliação'}
+      </button>
+    </div>
+    <div class="prize"><div class="prize-ico">🎁</div>
+      <p><strong>Concorra a um brinde!</strong> Toda avaliação vale uma participação no sorteio de fim de ano.</p>
+    </div></div>`;
+}
+
+function render(){
+  document.getElementById('root').innerHTML = isAdmin ? adminHTML() : formHTML();
+  if (!isAdmin && !done) wireStars();
+}
+
+function wireStars(){
+  const row = document.getElementById('sr'); if (!row) return;
+  row.addEventListener('mouseover', e => { const b=e.target.closest('.star-btn'); if(!b)return; hov=+b.dataset.i+1; refreshStars(); });
+  row.addEventListener('mouseleave', () => { hov=0; refreshStars(); });
+  row.addEventListener('click', e => { const b=e.target.closest('.star-btn'); if(!b)return; rating=+b.dataset.i+1; hov=0; refreshStars(); });
+  row.addEventListener('touchstart', e => { const b=e.target.closest('.star-btn'); if(!b)return; rating=+b.dataset.i+1; refreshStars(); }, {passive:true});
+}
+
+function refreshStars(){
+  const row = document.getElementById('sr'); if(!row)return;
+  row.querySelectorAll('.star-btn').forEach((btn,i)=>{ btn.classList.toggle('lit', i<rating||(hov>0&&i<hov)); });
+  const sw=document.getElementById('sw'); if(!sw)return;
+  const n=hov||rating; sw.textContent=n>0?WORDS[n-1]:'Escolha uma nota'; sw.classList.toggle('chosen',n>0);
+}
+
+function saveDraft(){
+  _draftName   = document.getElementById('nome')?.value   || '';
+  _draftComent = document.getElementById('coment')?.value || '';
+}
+
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_cb' + Date.now() + Math.random().toString(36).slice(2);
+    const scriptEl = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup(); reject(new Error('Tempo esgotado'));
+    }, 15000);
+    function cleanup(){ delete window[cbName]; scriptEl.remove(); clearTimeout(timer); }
+    window[cbName] = (data) => { cleanup(); if(data.error) reject(new Error(data.error)); else resolve(data); };
+    scriptEl.onerror = () => { cleanup(); reject(new Error('Erro de rede')); };
+    scriptEl.src = SCRIPT_URL + '?' + new URLSearchParams({...params, callback: cbName});
+    document.head.appendChild(scriptEl);
+  });
+}
+
+async function submit(){
+  if (busy) return;
+  saveDraft();
+  const nome   = _draftName.trim();
+  const coment = _draftComent.trim();
+  if (!rating) { err='Toque numa estrela para dar sua nota.'; render(); return; }
+  if (!nome)   { err='Por favor, informe seu nome.';          render(); return; }
+  err=''; busy=true;
+  try { localStorage.setItem('csat_nome', nome); } catch(e) {}
+  _savedName = nome; render();
+  try {
+    if (SCRIPT_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') throw new Error('Script URL não configurada');
+    const p = new URLSearchParams({ action:'submit', nome, estrelas:String(rating), comentario:coment, atendente });
+    const r = await fetch(`${SCRIPT_URL}?${p}`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    done = true;
+  } catch(e) {
+    err='Não foi possível enviar. Tente novamente.'; busy=false;
+  }
+  render();
+}
+
+// ── Admin ──
+function toggleGate(){
+  const g=document.getElementById('admin-gate'); if(!g)return;
+  g.hidden=!g.hidden;
+  if(!g.hidden){ document.getElementById('pw-err').style.display='none'; document.getElementById('admin-pw').value=''; setTimeout(()=>document.getElementById('admin-pw')?.focus(),50); }
+}
+async function checkPw(){
+  const pw=(document.getElementById('admin-pw')?.value||'').trim();
+  const h = await hashPass(pw);
+  if (h===ADMIN_HASH){ isAdmin=true; document.getElementById('admin-gate').hidden=true; document.getElementById('admin-icon').hidden=true; render(); }
+  else { document.getElementById('pw-err').style.display='block'; document.getElementById('admin-pw').value=''; }
+}
+
+function csatBadge(avg){
+  if(avg==='—'||isNaN(avg))return['—','bdg-y']; const n=parseFloat(avg);
+  if(n>=4.5)return['Excelente','bdg-g']; if(n>=4.0)return['Bom','bdg-b'];
+  if(n>=3.0)return['Regular','bdg-y']; return['Melhorar','bdg-r'];
+}
+function starStr(n){ return'★'.repeat(n||0)+'☆'.repeat(5-(n||0)); }
+function fmtDate(iso){
+  try{ return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+  catch{ return iso||'—'; }
+}
+function barChartSVG(dist,total){
+  const max=Math.max(...[1,2,3,4,5].map(k=>dist[k]||0),1);
+  const BW=28,GAP=10,H=96,IH=H-22,TW=5*BW+4*GAP;
+  const clrs=['#EF4444','#F97316','#FACC15','#60A5FA','#22C55E'];
+  let svg='';
+  for(let i=0;i<5;i++){
+    const cnt=dist[i+1]||0, barH=Math.max(4,Math.round((cnt/max)*IH));
+    const x=i*(BW+GAP), y=IH-barH+2, pct=total>0?Math.round(cnt/total*100):0;
+    svg+=`<rect x="${x}" y="${y}" width="${BW}" height="${barH}" rx="4" fill="${clrs[i]}"/>`;
+    svg+=`<text x="${x+BW/2}" y="${H-4}" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".55">${i+1}★</text>`;
+    if(cnt>0) svg+=`<text x="${x+BW/2}" y="${y-4}" text-anchor="middle" font-size="9" fill="${clrs[i]}" font-weight="700">${pct}%</text>`;
+  }
+  return `<svg viewBox="0 -6 ${TW} ${H+6}" style="width:100%;overflow:visible;color:var(--text2)">${svg}</svg>`;
+}
+function setAdminFilter(ag,only){ adminAgentFilter=ag; adminOnlyComment=only; render(); }
+function setAdminPeriod(p){ adminPeriod=p; render(); }
+
+function adminHTML(){
+  if(adminRows===null&&!adminBusy){ adminBusy=true; loadAdmin(); }
+  if(adminRows===null) return `<div class="admin"><div class="admin-hd"><div><h1>Avaliações CSAT</h1><p>Sistema RAM · Atendimento ao Cliente</p></div></div><p style="color:var(--text3);padding:48px 0;text-align:center">Carregando avaliações…</p></div>`;
+  if(adminErr) return `<div class="admin"><div class="admin-hd"><div><h1>Avaliações CSAT</h1></div></div><div class="err" style="margin-top:8px">${esc(adminErr)}</div><div style="text-align:center;margin-top:16px"><button class="btn" style="width:auto;padding:10px 24px" onclick="reloadAdmin()">Tentar novamente</button></div></div>`;
+
+  // Period filter
+  const now=new Date();
+  function weekStart(d,off){ const x=new Date(d); x.setHours(0,0,0,0); const dw=x.getDay()===0?6:x.getDay()-1; x.setDate(x.getDate()-dw+off*7); return x; }
+  let pr=adminRows;
+  if(adminPeriod==='hoje'){ const t=now.toISOString().slice(0,10); pr=adminRows.filter(r=>r.ts&&r.ts.slice(0,10)===t); }
+  else if(adminPeriod==='semana'){ const s=weekStart(now,0).toISOString(); pr=adminRows.filter(r=>r.ts&&r.ts>=s); }
+  else if(adminPeriod==='semana_ant'){ const s=weekStart(now,-1).toISOString(),e=weekStart(now,0).toISOString(); pr=adminRows.filter(r=>r.ts&&r.ts>=s&&r.ts<e); }
+  else if(adminPeriod==='mes'){ const m=now.toISOString().slice(0,7); pr=adminRows.filter(r=>r.ts&&r.ts.slice(0,7)===m); }
+  else if(adminPeriod==='30d'){ const c=new Date(now-30*86400000).toISOString(); pr=adminRows.filter(r=>r.ts&&r.ts>=c); }
+
+  const PERIODS=[{k:'tudo',l:'Tudo'},{k:'hoje',l:'Hoje'},{k:'semana',l:'Semana atual'},{k:'semana_ant',l:'Semana ant.'},{k:'mes',l:'Mês atual'},{k:'30d',l:'30 dias'}];
+  const periodBarHTML=PERIODS.map(p=>`<button class="period-btn${adminPeriod===p.k?' active':''}" onclick="setAdminPeriod('${p.k}')">${p.l}</button>`).join('');
+
+  const total=pr.length;
+  const avgRaw=total?pr.reduce((s,r)=>s+(r.estrelas||0),0)/total:null;
+  const avg=avgRaw!==null?avgRaw.toFixed(1):'—';
+  const p5=total?Math.round(pr.filter(r=>r.estrelas===5).length/total*100):0;
+  const [bdgLabel,bdgCls]=csatBadge(avg);
+  const dist={1:0,2:0,3:0,4:0,5:0};
+  pr.forEach(r=>{ if(r.estrelas>=1&&r.estrelas<=5)dist[r.estrelas]++; });
+
+  const agents={};
+  pr.forEach(r=>{ const ag=r.atendente||'Sem atendente'; if(!agents[ag])agents[ag]={sum:0,cnt:0}; agents[ag].sum+=r.estrelas||0; agents[ag].cnt++; });
+  const agentList=Object.entries(agents).sort((a,b)=>b[1].cnt-a[1].cnt);
+  const agentTableRows=agentList.map(([ag,s])=>{ const agAvg=(s.sum/s.cnt).toFixed(1),[bl,bc]=csatBadge(agAvg),stars='★'.repeat(Math.round(s.sum/s.cnt))+'☆'.repeat(5-Math.round(s.sum/s.cnt));
+    return `<tr><td class="ag-name">${esc(ag)}</td><td style="color:var(--gold);white-space:nowrap">${stars}</td><td style="font-weight:700;color:var(--text)">${agAvg}</td><td style="color:var(--text2)">${s.cnt}</td><td><span class="bdg ${bc}">${bl}</span></td></tr>`;
+  }).join('')||`<tr><td colspan="5" class="empty">—</td></tr>`;
+
+  const agentOpts=['todos',...agentList.map(([ag])=>ag)];
+  const agentOptHTML=agentOpts.map(ag=>`<option value="${esc(ag)}" ${adminAgentFilter===ag?'selected':''}>${ag==='todos'?'Todos os atendentes':esc(ag)}</option>`).join('');
+
+  let filtered=pr;
+  if(adminAgentFilter!=='todos') filtered=filtered.filter(r=>(r.atendente||'Sem atendente')===adminAgentFilter);
+  if(adminOnlyComment) filtered=filtered.filter(r=>(r.comentario||'').trim()!=='');
+
+  const tblRows=filtered.length>0?filtered.map(r=>`<tr>
+    <td class="name">${esc(r.nome||'—')}</td>
+    <td style="color:var(--gold);white-space:nowrap">${'★'.repeat(r.estrelas||0)}<span style="color:var(--text3);font-size:11px;margin-left:5px">${WORDS[(r.estrelas||1)-1]||''}</span></td>
+    <td style="max-width:260px">${esc(r.comentario||'—')}</td>
+    <td style="white-space:nowrap">${esc(r.atendente||'—')}</td>
+    <td style="white-space:nowrap;font-size:12px;color:var(--text3)">${fmtDate(r.ts)}</td>
+  </tr>`).join(''):`<tr><td colspan="5" class="empty">Nenhuma avaliação encontrada.</td></tr>`;
+
+  return `<div class="admin">
+    <div class="admin-hd">
+      <div><h1>Avaliações CSAT</h1><p>Sistema RAM · Atendimento ao Cliente</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" style="width:auto;padding:9px 18px;font-size:13px" onclick="reloadAdmin()">↻ Atualizar</button>
+        <button onclick="isAdmin=false;document.getElementById('admin-icon').hidden=false;render()" style="background:none;border:1.5px solid var(--border);color:var(--text2);border-radius:var(--radius-sm);padding:9px 14px;font-family:inherit;font-size:13px;cursor:pointer">✕ Fechar</button>
+      </div>
+    </div>
+    <div class="period-bar">${periodBarHTML}</div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-lbl">CSAT Médio</div><div class="kpi-num">${avg}</div><div class="kpi-sub">Escala de 1 a 5</div><div class="kpi-badge"><span class="bdg ${bdgCls}">${bdgLabel}</span></div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Total de Avaliações</div><div class="kpi-num">${total}</div><div class="kpi-sub">Respostas coletadas</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Nota Máxima</div><div class="kpi-num">${p5}%</div><div class="kpi-sub">Clientes com nota 5★</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card"><div class="chart-ttl">Distribuição de Notas</div>${barChartSVG(dist,total)}</div>
+      <div class="chart-card"><div class="chart-ttl">CSAT por Atendente</div>
+        ${agentList.length>0?`<table class="ag-tbl"><thead><tr><th>Atendente</th><th>Stars</th><th>CSAT</th><th>Aval.</th><th>Status</th></tr></thead><tbody>${agentTableRows}</tbody></table>`:`<p style="color:var(--text3);font-size:13px;padding:20px 0">Sem dados.</p>`}
+      </div>
+    </div>
+    <div>
+      <div class="resp-hd">
+        <span style="font-size:14px;font-weight:700;color:var(--text)">Respostas dos Clientes <span style="color:var(--text3);font-weight:400">(${filtered.length})</span></span>
+        <div class="filter-row">
+          <select class="filter-sel" onchange="setAdminFilter(this.value,adminOnlyComment)">${agentOptHTML}</select>
+          <label class="filter-chk"><input type="checkbox" ${adminOnlyComment?'checked':''} onchange="setAdminFilter(adminAgentFilter,this.checked)" style="accent-color:var(--blue)"> Só com comentário</label>
+        </div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:8px"><table>
+        <thead><tr><th>Cliente</th><th>Nota</th><th>Comentário</th><th>Atendente</th><th>Data</th></tr></thead>
+        <tbody>${tblRows}</tbody>
+      </table></div>
+    </div>
+  </div>`;
+}
+
+async function loadAdmin(){
+  adminErr='';
+  try {
+    const r = await fetch(`${SCRIPT_URL}?action=read`);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    if(d.error) throw new Error(d.error);
+    adminRows = d.rows || [];
+  } catch(e){
+    adminRows=[];
+    adminErr='Erro ao carregar: '+(e&&e.message?e.message:String(e));
+  }
+  adminBusy=false; render();
+}
+function reloadAdmin(){ adminRows=null; adminErr=''; adminBusy=false; render(); }
+
+render();
+</script>
+</body>
+</html>
