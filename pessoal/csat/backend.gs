@@ -36,7 +36,7 @@ function doGet(e) {
         result = { rows: rows };
       } else {
         sheet.appendRow([
-          new Date(),
+          new Date().toISOString(),
           e.parameter.nome       || '',
           parseInt(e.parameter.estrelas) || 0,
           e.parameter.comentario || '',
